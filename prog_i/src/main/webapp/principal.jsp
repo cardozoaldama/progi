@@ -32,6 +32,7 @@
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Inicio</a></li>
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="articulo?action=mostrar">Mostrar Articulos</a></li>
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="articulo?action=nuevo">Nuevo Articulo</a></li>
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="articulo?action=example">Example</a></li>
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="usuario?tipo=cerrarSesion">Cerrar Sesion</a></li>
 					</ul>
 				</div>
