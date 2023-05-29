@@ -77,6 +77,9 @@ public class ServletArticulo extends HttpServlet {
 			case "eliminar":
 				eliminar(request, response);
 				break;
+			case "example":
+				ejemplo(request, response);
+				break;
 			default:
 				break;
 			}
@@ -95,6 +98,14 @@ public class ServletArticulo extends HttpServlet {
 			throws ServletException, IOException {
 		System.out.println("Hola Servlet..");
 		doGet(request, response);
+	}
+	
+	private void ejemplo(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException, SQLException {
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/example.jsp");
+				List<Articulo> listaArticulos =	articuloDAO.listarArticulos();
+				request.setAttribute("lista", listaArticulos);
+				dispatcher.forward(request, response);
 	}
 
 	private void index(HttpServletRequest request, HttpServletResponse response)
