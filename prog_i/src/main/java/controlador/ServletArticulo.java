@@ -22,6 +22,7 @@ public class ServletArticulo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	ArticuloDAO articuloDAO;
 
+	@Override
 	public void init() {
 		String jdbcURL = getServletContext().getInitParameter("URL");
 		String jdbcUsername = getServletContext().getInitParameter("USUARIO");
@@ -46,6 +47,7 @@ public class ServletArticulo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		System.out.println("Hola Servlet..");
@@ -68,7 +70,7 @@ public class ServletArticulo extends HttpServlet {
 				break;
 			case "showedit":
 				showEditar(request, response);
-				break;	
+				break;
 			case "editar":
 				editar(request, response);
 				break;
@@ -77,70 +79,81 @@ public class ServletArticulo extends HttpServlet {
 				break;
 			default:
 				break;
-			}			
+			}
 		} catch (SQLException e) {
 			e.getStackTrace();
 		}
-		
-		
+
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		System.out.println("Hola Servlet..");
 		doGet(request, response);
 	}
-	
-	private void index (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
-		//mostrar(request, response);
-		RequestDispatcher dispatcher= request.getRequestDispatcher("principal.jsp");
-		dispatcher.forward(request, response);
-	}
 
-	private void registrar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-		Articulo articulo = new Articulo(0, request.getParameter("codigo"), request.getParameter("nombre"), request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")), Double.parseDouble(request.getParameter("precio")));
-		articuloDAO.insertar(articulo);
-		
+	private void index(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
+		// mostrar(request, response);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
 		dispatcher.forward(request, response);
 	}
-	
-	private void nuevo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+
+	private void registrar(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException, SQLException {
+		Articulo articulo = new Articulo(0, request.getParameter("codigo"), request.getParameter("nombre"),
+				request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")),
+				Double.parseDouble(request.getParameter("precio")));
+		articuloDAO.insertar(articulo);
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	private void nuevo(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException, SQLException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/register.jsp");
 		dispatcher.forward(request, response);
 	}
-	
-	
-	private void mostrar(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException , ServletException{
+
+	private void mostrar(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException, ServletException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/mostrar.jsp");
-		List<Articulo> listaArticulos= articuloDAO.listarArticulos();
+		List<Articulo> listaArticulos = articuloDAO.listarArticulos();
 		request.setAttribute("lista", listaArticulos);
 		dispatcher.forward(request, response);
-	}	
-	
-	private void showEditar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+	}
+
+	private void showEditar(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException, SQLException {
 		Articulo articulo = articuloDAO.obtenerPorId(Integer.parseInt(request.getParameter("id")));
 		request.setAttribute("articulo", articulo);
-		
+
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/editar.jsp");
 		dispatcher.forward(request, response);
 	}
-	
-	private void editar(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
-		Articulo articulo = new Articulo(Integer.parseInt(request.getParameter("id")), request.getParameter("codigo"), request.getParameter("nombre"), request.getParameter("descripcion"), Double.parseDouble(request.getParameter("existencia")), Double.parseDouble(request.getParameter("precio")));
+
+	private void editar(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
+		Articulo articulo = new Articulo(Integer.parseInt(request.getParameter("id")), request.getParameter("codigo"),
+				request.getParameter("nombre"), request.getParameter("descripcion"),
+				Double.parseDouble(request.getParameter("existencia")),
+				Double.parseDouble(request.getParameter("precio")));
 		articuloDAO.actualizar(articulo);
 		index(request, response);
 	}
-	
-	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
+
+	private void eliminar(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ServletException, IOException {
 		Articulo articulo = articuloDAO.obtenerPorId(Integer.parseInt(request.getParameter("idarticulo")));
 		articuloDAO.eliminar(articulo);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
 		dispatcher.forward(request, response);
-		
+
 	}
 }

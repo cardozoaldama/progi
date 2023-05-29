@@ -19,7 +19,7 @@ public class ArticuloDAO {
 		System.out.println(URL);
 		con = new Conexion();
 	}
-	
+
 	// insertar artículo
 	public boolean insertar(Articulo articulo) throws SQLException {
 		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio) VALUES (?, ?, ?,?,?,?)";
@@ -43,7 +43,7 @@ public class ArticuloDAO {
 	// listar todos los productos
 	public List<Articulo> listarArticulos() throws SQLException {
 
-		List<Articulo> listaArticulos = new ArrayList<Articulo>();
+		List<Articulo> listaArticulos = new ArrayList<>();
 		String sql = "SELECT * FROM articulos";
 		con.conectar();
 		connection = con.getJdbcConnection();
@@ -105,8 +105,8 @@ public class ArticuloDAO {
 		con.desconectar();
 		return rowActualizar;
 	}
-	
-	//eliminar
+
+	// eliminar
 	public boolean eliminar(Articulo articulo) throws SQLException {
 		boolean rowEliminar = false;
 		String sql = "DELETE FROM articulos WHERE idarticulo=?";

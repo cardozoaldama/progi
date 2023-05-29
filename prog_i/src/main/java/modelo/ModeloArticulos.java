@@ -12,7 +12,8 @@ public class ModeloArticulos {
 	private Double precio;
 	private static final AtomicLong contador = new AtomicLong(100);
 
-	public ModeloArticulos(int idarticulo, String codigo, String nombre, String descripcion, Double existencia, Double precio) {
+	public ModeloArticulos(int idarticulo, String codigo, String nombre, String descripcion, Double existencia,
+			Double precio) {
 		this.idarticulo = idarticulo;
 		this.codigo = codigo;
 		this.nombre = nombre;
@@ -77,7 +78,5 @@ public class ModeloArticulos {
 	public void setPrecio(Double precio) {
 		this.precio = precio;
 	}
-
-	
 
 }
