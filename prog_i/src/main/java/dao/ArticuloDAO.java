@@ -1,4 +1,4 @@
-package dao;
+	package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,12 +22,21 @@ public class ArticuloDAO {
 		con = new Conexion();
 	}
 	
-	private static final AtomicLong contadorid = new AtomicLong(100); //contador que ira incrementando el valor del ID el cual genera automaticamente
+	// Código del método ArticuloDAO aquí arriba.
+
+	/* PEGAR ESTO ENTRE LOS MÉTODOS MENCIONADOS ARRIBA Y ABAJO. */
+	// Contador que irá incrementando el valor del ID el cual genera automáticamente.
+	private static final AtomicLong contadorid = new AtomicLong(100);
 	private String activoS = "S";
 	private String inactivoN = "N";
-	Long datetime = System.currentTimeMillis(); //Para obtener fecha-hora actual del sistema operativo
+	// Para obtener fecha-hora actual del SO
+	Long datetime = System.currentTimeMillis();
 	Timestamp timestamp = new Timestamp(datetime);
-	
+	/*
+	Cuando termine de escribir, combinación de teclas "CTRL + SHIFT + O".
+	Luego de eso, seleccionar la opción de java.sql.Timestamp.
+	*/
+
 	// insertar artículo
 	public boolean insertar(Articulo articulo) throws SQLException {
 		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio, activo, usuario_creacion, fecha_creacion, usuario_modificacion, fecha_modificacion) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
@@ -57,7 +66,7 @@ public class ArticuloDAO {
 	// listar todos los productos
 	public List<Articulo> listarArticulos() throws SQLException {
 
-		List<Articulo> listaArticulos = new ArrayList<Articulo>();
+		List<Articulo> listaArticulos = new ArrayList<>();
 		String sql = "SELECT * FROM articulos";
 		con.conectar();
 		connection = con.getJdbcConnection();
@@ -71,11 +80,6 @@ public class ArticuloDAO {
 			String descripcion = resulSet.getString("descripcion");
 			Double existencia = resulSet.getDouble("existencia");
 			Double precio = resulSet.getDouble("precio");
-			String activo = resulSet.getString("activo");
-			String usuarioCreacion = resulSet.getString("usuarioCreacion");
-			Timestamp fechaHoraCreacion = resulSet.getTimestamp("fechaHoraCreacion");
-			String usuarioModificacion = resulSet.getString("usuarioModificacion");
-			Timestamp fechaHoraModificacion = resulSet.getTimestamp("fechaHoraModificacion");
 			Articulo articulo = new Articulo(idarticulo, codigo, nombre, descripcion, existencia, precio);
 			listaArticulos.add(articulo);
 		}
@@ -124,8 +128,8 @@ public class ArticuloDAO {
 		con.desconectar();
 		return rowActualizar;
 	}
-	
-	//eliminar
+
+	// eliminar
 	public boolean eliminar(Articulo articulo) throws SQLException {
 		boolean rowEliminar = false;
 		String sql = "DELETE FROM articulos WHERE idarticulo=?";
