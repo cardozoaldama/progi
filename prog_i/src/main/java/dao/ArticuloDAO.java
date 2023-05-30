@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import conexion.Conexion;
 import entidad.Articulo;
@@ -19,21 +21,33 @@ public class ArticuloDAO {
 		System.out.println(URL);
 		con = new Conexion();
 	}
-
+	
+	private static final AtomicLong contadorid = new AtomicLong(100); //contador que ira incrementando el valor del ID el cual genera automaticamente
+	private String activoS = "S";
+	private String inactivoN = "N";
+	Long datetime = System.currentTimeMillis(); //Para obtener fecha-hora actual del sistema operativo
+	Timestamp timestamp = new Timestamp(datetime);
+	
 	// insertar artículo
 	public boolean insertar(Articulo articulo) throws SQLException {
-		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio) VALUES (?, ?, ?,?,?,?)";
+		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio, activo, usuario_creacion, fecha_creacion, usuario_modificacion, fecha_modificacion) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		System.out.println(articulo.getDescripcion());
 		con.conectar();
 		connection = con.getJdbcConnection();
 		PreparedStatement statement = connection.prepareStatement(sql);
-		statement.setString(1, null);
+        
+        statement.setInt(1, (int) contadorid.incrementAndGet());
 		statement.setString(2, articulo.getCodigo());
 		statement.setString(3, articulo.getNombre());
 		statement.setString(4, articulo.getDescripcion());
 		statement.setDouble(5, articulo.getExistencia());
 		statement.setDouble(6, articulo.getPrecio());
-
+		statement.setString(7, activoS);
+		statement.setString(8, null);
+		statement.setTimestamp(9, timestamp);
+		statement.setString(10, null);
+		statement.setTimestamp(11, timestamp);
+		
 		boolean rowInserted = statement.executeUpdate() > 0;
 		statement.close();
 		con.desconectar();
@@ -43,7 +57,7 @@ public class ArticuloDAO {
 	// listar todos los productos
 	public List<Articulo> listarArticulos() throws SQLException {
 
-		List<Articulo> listaArticulos = new ArrayList<>();
+		List<Articulo> listaArticulos = new ArrayList<Articulo>();
 		String sql = "SELECT * FROM articulos";
 		con.conectar();
 		connection = con.getJdbcConnection();
@@ -57,6 +71,11 @@ public class ArticuloDAO {
 			String descripcion = resulSet.getString("descripcion");
 			Double existencia = resulSet.getDouble("existencia");
 			Double precio = resulSet.getDouble("precio");
+			String activo = resulSet.getString("activo");
+			String usuarioCreacion = resulSet.getString("usuarioCreacion");
+			Timestamp fechaHoraCreacion = resulSet.getTimestamp("fechaHoraCreacion");
+			String usuarioModificacion = resulSet.getString("usuarioModificacion");
+			Timestamp fechaHoraModificacion = resulSet.getTimestamp("fechaHoraModificacion");
 			Articulo articulo = new Articulo(idarticulo, codigo, nombre, descripcion, existencia, precio);
 			listaArticulos.add(articulo);
 		}
@@ -105,8 +124,8 @@ public class ArticuloDAO {
 		con.desconectar();
 		return rowActualizar;
 	}
-
-	// eliminar
+	
+	//eliminar
 	public boolean eliminar(Articulo articulo) throws SQLException {
 		boolean rowEliminar = false;
 		String sql = "DELETE FROM articulos WHERE idarticulo=?";
