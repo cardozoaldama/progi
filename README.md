@@ -1,5 +1,5 @@
 # progi
-A little Java project for testing the Object Oriented Programming.
+A little Java project for testing the Object Oriented Programming. This project is part of the **Programación Orientada a Objetos I** course at **Universidad Técnica de Comercialización y Desarrollo**.
 
 ## Java Object-Oriented Programming Project
 
