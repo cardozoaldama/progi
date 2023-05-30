@@ -1,12 +1,14 @@
-package dao;
+	package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import conexion.Conexion;
 import entidad.Articulo;
@@ -19,21 +21,42 @@ public class ArticuloDAO {
 		System.out.println(URL);
 		con = new Conexion();
 	}
+	
+	// Código del método ArticuloDAO aquí arriba.
+
+	/* PEGAR ESTO ENTRE LOS MÉTODOS MENCIONADOS ARRIBA Y ABAJO. */
+	// Contador que irá incrementando el valor del ID el cual genera automáticamente.
+	private static final AtomicLong contadorid = new AtomicLong(100);
+	private String activoS = "S";
+	private String inactivoN = "N";
+	// Para obtener fecha-hora actual del SO
+	Long datetime = System.currentTimeMillis();
+	Timestamp timestamp = new Timestamp(datetime);
+	/*
+	Cuando termine de escribir, combinación de teclas "CTRL + SHIFT + O".
+	Luego de eso, seleccionar la opción de java.sql.Timestamp.
+	*/
 
 	// insertar artículo
 	public boolean insertar(Articulo articulo) throws SQLException {
-		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio) VALUES (?, ?, ?,?,?,?)";
+		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio, activo, usuario_creacion, fecha_creacion, usuario_modificacion, fecha_modificacion) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		System.out.println(articulo.getDescripcion());
 		con.conectar();
 		connection = con.getJdbcConnection();
 		PreparedStatement statement = connection.prepareStatement(sql);
-		statement.setString(1, null);
+        
+        statement.setInt(1, (int) contadorid.incrementAndGet());
 		statement.setString(2, articulo.getCodigo());
 		statement.setString(3, articulo.getNombre());
 		statement.setString(4, articulo.getDescripcion());
 		statement.setDouble(5, articulo.getExistencia());
 		statement.setDouble(6, articulo.getPrecio());
-
+		statement.setString(7, activoS);
+		statement.setString(8, null);
+		statement.setTimestamp(9, timestamp);
+		statement.setString(10, null);
+		statement.setTimestamp(11, timestamp);
+		
 		boolean rowInserted = statement.executeUpdate() > 0;
 		statement.close();
 		con.desconectar();
