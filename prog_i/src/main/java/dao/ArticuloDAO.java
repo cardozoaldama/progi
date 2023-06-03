@@ -1,4 +1,4 @@
-	package dao;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import conexion.Conexion;
 import entidad.Articulo;
+import entidad.Usuario;
 
 public class ArticuloDAO {
 	private Conexion con;
