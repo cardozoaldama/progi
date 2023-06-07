@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import conexion.Conexion;
@@ -27,9 +28,10 @@ public class ArticuloDAO {
 
 	/* PEGAR ESTO ENTRE LOS MÉTODOS MENCIONADOS ARRIBA Y ABAJO. */
 	// Contador que irá incrementando el valor del ID el cual genera automáticamente.
-	private static final AtomicLong contadorid = new AtomicLong(100);
+	// private static final AtomicLong contadorid = new AtomicLong(100);
+	private AtomicInteger contadorid = new AtomicInteger(0);
 	private String activoS = "S";
-	private String inactivoN = "N";
+	// private String inactivoN = "N";
 	// Para obtener fecha-hora actual del SO
 	Long datetime = System.currentTimeMillis();
 	Timestamp timestamp = new Timestamp(datetime);
@@ -45,8 +47,12 @@ public class ArticuloDAO {
 		con.conectar();
 		connection = con.getJdbcConnection();
 		PreparedStatement statement = connection.prepareStatement(sql);
+		
+		// Contador para insertar ID
+		int ultimoIdArticulo = obtenerUltimoIdArticulo();
+		contadorid.set(ultimoIdArticulo + 1);
         
-        statement.setInt(1, (int) contadorid.incrementAndGet());
+        statement.setInt(1, contadorid.get());
 		statement.setString(2, articulo.getCodigo());
 		statement.setString(3, articulo.getNombre());
 		statement.setString(4, articulo.getDescripcion());
@@ -62,6 +68,19 @@ public class ArticuloDAO {
 		statement.close();
 		con.desconectar();
 		return rowInserted;
+	}
+	
+	// Para obtener el último ID del artículo
+	public int obtenerUltimoIdArticulo() throws SQLException {
+		String sql = "SELECT MAX(idarticulo) FROM articulos";
+		try (Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sql)){
+			if (resultSet.next()) {
+				return resultSet.getInt(1);
+			}
+		}
+		// Si no hay registros en la tabla, retorna un valor predeterminado.
+		return 0;
 	}
 
 	// listar todos los productos
