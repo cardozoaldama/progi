@@ -115,14 +115,13 @@ public class ServletArticulo extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	private void registrar(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException, SQLException {
+	private void registrar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		Articulo articulo = new Articulo(0, request.getParameter("codigo"), request.getParameter("nombre"),
-				request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")),
-				Double.parseDouble(request.getParameter("precio")));
+		request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")),
+		Double.parseDouble(request.getParameter("precio")));
 		articuloDAO.insertar(articulo, request);
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
+		request.setAttribute("mensaje", "Los datos se insertaron correctamente");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/registrar_articulos.jsp");
 		dispatcher.forward(request, response);
 	}
 
