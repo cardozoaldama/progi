@@ -67,6 +67,6 @@
 				$(requestScope.mensaje)
 			</div>
 		</c:if>
-				
+		<script src="../js/limpiar_campos.js"></script>
 	</body>
 </html>
