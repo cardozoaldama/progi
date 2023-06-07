@@ -35,7 +35,7 @@ public class Usuario {
 	public void setClave(String clave) {
 		this.clave = clave;
 	}
-
+	
 	public String getActivo() {
 		return activo;
 	}

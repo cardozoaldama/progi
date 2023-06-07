@@ -12,7 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.ArticuloDAO;
+import dao.CiudadDAO;
+import dao.DepartamentoDAO;
 import entidad.Articulo;
+import entidad.Ciudad;
+import entidad.Departamento;
 
 /**
  * Servlet implementation class ServletArticulo
@@ -21,8 +25,10 @@ import entidad.Articulo;
 public class ServletArticulo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	ArticuloDAO articuloDAO;
+	DepartamentoDAO departamentoDAO;
+	CiudadDAO ciudadDAO;
 
-	@Override
+
 	public void init() {
 		String jdbcURL = getServletContext().getInitParameter("URL");
 		String jdbcUsername = getServletContext().getInitParameter("USUARIO");
@@ -47,7 +53,6 @@ public class ServletArticulo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		System.out.println("Hola Servlet..");
@@ -70,7 +75,7 @@ public class ServletArticulo extends HttpServlet {
 				break;
 			case "showedit":
 				showEditar(request, response);
-				break;
+				break;	
 			case "editar":
 				editar(request, response);
 				break;
@@ -80,38 +85,48 @@ public class ServletArticulo extends HttpServlet {
 			case "example":
 				ejemplo(request, response);
 				break;
+			case "registrarArticulos":
+				registrarArticulos(request, response);
+				break;
+			case "comboDepartamento": 
+				comboDepartamento(request, response); 
+				break;
 			default:
 				break;
-			}
+			}			
 		} catch (SQLException e) {
 			e.getStackTrace();
 		}
-
+		
+		
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		System.out.println("Hola Servlet..");
+		
+		String action = request.getParameter("action");
+	    if (action != null && action.equals("comboCiudad")) {
+	        try {
+				comboCiudad(request, response);
+			} catch (SQLException | IOException | ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    } else {
+	        // Otros manejadores de acciones
+	    }
+		
 		doGet(request, response);
 	}
 	
-	private void ejemplo(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException, SQLException {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/example.jsp");
-				List<Articulo> listaArticulos =	articuloDAO.listarArticulos();
-				request.setAttribute("lista", listaArticulos);
-				dispatcher.forward(request, response);
-	}
-
-	private void index(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, ServletException, IOException {
-		// mostrar(request, response);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
+	private void index (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
+		//mostrar(request, response);
+		RequestDispatcher dispatcher= request.getRequestDispatcher("principal.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -119,49 +134,76 @@ public class ServletArticulo extends HttpServlet {
 		Articulo articulo = new Articulo(0, request.getParameter("codigo"), request.getParameter("nombre"), request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")), Double.parseDouble(request.getParameter("precio")));
 		articuloDAO.insertar(articulo, request);
 		request.setAttribute("mensaje", "Los datos se insertaron correctamente");
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/registrar_articulos.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/registrar_articulos.jsp");
+        dispatcher.forward(request, response);
+	}
+	
+	private void nuevo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/register.jsp");
 		dispatcher.forward(request, response);
 	}
-
-	private void nuevo(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException, SQLException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/registrar_articulos.jsp");
-		dispatcher.forward(request, response);
-	}
-
-	private void mostrar(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException, ServletException {
+	
+	
+	private void mostrar(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException , ServletException{
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/mostrar.jsp");
-		List<Articulo> listaArticulos = articuloDAO.listarArticulos();
+		List<Articulo> listaArticulos= articuloDAO.listarArticulos();
 		request.setAttribute("lista", listaArticulos);
 		dispatcher.forward(request, response);
-	}
-
-	private void showEditar(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException, SQLException {
+	}	
+	
+	private void showEditar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		Articulo articulo = articuloDAO.obtenerPorId(Integer.parseInt(request.getParameter("id")));
-		request.setAttribute("articulo", articulo);
-
+		request.setAttribute("articulo", articulo);	
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/editar.jsp");
 		dispatcher.forward(request, response);
 	}
-
-	private void editar(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, ServletException, IOException {
-		Articulo articulo = new Articulo(Integer.parseInt(request.getParameter("id")), request.getParameter("codigo"),
-				request.getParameter("nombre"), request.getParameter("descripcion"),
-				Double.parseDouble(request.getParameter("existencia")),
-				Double.parseDouble(request.getParameter("precio")));
+	
+	private void editar(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
+		Articulo articulo = new Articulo(Integer.parseInt(request.getParameter("id")), request.getParameter("codigo"), request.getParameter("nombre"), request.getParameter("descripcion"), Double.parseDouble(request.getParameter("existencia")), Double.parseDouble(request.getParameter("precio")));
 		articuloDAO.actualizar(articulo);
 		index(request, response);
 	}
-
-	private void eliminar(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, ServletException, IOException {
+	
+	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException{
 		Articulo articulo = articuloDAO.obtenerPorId(Integer.parseInt(request.getParameter("idarticulo")));
 		articuloDAO.eliminar(articulo);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
 		dispatcher.forward(request, response);
-
+		
 	}
+	
+	private void ejemplo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/example.jsp");
+		List<Articulo> listaArticulos= articuloDAO.listarArticulos();
+		request.setAttribute("lista", listaArticulos);
+		dispatcher.forward(request, response);
+	}
+	
+	private void registrarArticulos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/registrar_articulos.jsp");
+		dispatcher.forward(request, response);
+	}
+	
+	private void comboDepartamento(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException , ServletException{
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/datos_combos.jsp"); 
+		List<Departamento> listaDepartamentos = articuloDAO.listarDepartamentos();
+		request.setAttribute("listaDepartamentos", listaDepartamentos);
+		dispatcher.forward(request, response);
+	}
+	
+	private void comboCiudad(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException , ServletException{
+		int idDepartamento = Integer.parseInt(request.getParameter("idDepartamento"));
+	    
+	    // Obtener la lista de ciudades según el idDepartamento
+	    List<Ciudad> listaCiudades = articuloDAO.listarCiudadesPorDepartamento(idDepartamento);
+	    
+	    // Pasar el idDepartamento y la lista de ciudades al JSP
+	    request.setAttribute("idDepartamento", idDepartamento);
+	    request.setAttribute("listaCiudades", listaCiudades);
+	    
+	    // Despachar la solicitud al JSP
+	    RequestDispatcher dispatcher = request.getRequestDispatcher("/vista/datos_combos.jsp");
+	    dispatcher.forward(request, response);
+	}
+	 
 }

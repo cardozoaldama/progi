@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import conexion.Conexion;
 import entidad.Articulo;
+import entidad.Ciudad;
+import entidad.Departamento;
 
 public class ArticuloDAO {
 	private Conexion con;
@@ -24,35 +26,27 @@ public class ArticuloDAO {
 		con = new Conexion();
 	}
 	
-	// Código del método ArticuloDAO aquí arriba.
-
-	/* PEGAR ESTO ENTRE LOS MÉTODOS MENCIONADOS ARRIBA Y ABAJO. */
-	// Contador que irá incrementando el valor del ID el cual genera automáticamente.
-	// private static final AtomicLong contadorid = new AtomicLong(100);
+	//private static final AtomicLong contadorid = new AtomicLong(104);//contador que ira incrementando el valor del ID el cual genera automaticamente
 	private AtomicInteger contadorid = new AtomicInteger(0);
 	private String activoS = "S";
-	// private String inactivoN = "N";
-	// Para obtener fecha-hora actual del SO
-	Long datetime = System.currentTimeMillis();
+	//private String inactivoN = "N";
+	Long datetime = System.currentTimeMillis(); //Para obtener fecha-hora actual del sistema operativo
 	Timestamp timestamp = new Timestamp(datetime);
-	/*
-	Cuando termine de escribir, combinación de teclas "CTRL + SHIFT + O".
-	Luego de eso, seleccionar la opción de java.sql.Timestamp.
-	*/
-
+	
+	
 	// insertar artículo
 	public boolean insertar(Articulo articulo, HttpServletRequest request) throws SQLException {
 		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio, activo, usuario_creacion, fecha_creacion, usuario_modificacion, fecha_modificacion) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-		System.out.println(articulo.getDescripcion());
+		
 		con.conectar();
 		connection = con.getJdbcConnection();
 		PreparedStatement statement = connection.prepareStatement(sql);
 		
-		// Contador para insertar ID
+		//Contador para insertar el ID
 		int ultimoIdArticulo = obtenerUltimoIdArticulo();
 		contadorid.set(ultimoIdArticulo + 1);
-        
-        statement.setInt(1, contadorid.get());
+		
+		statement.setInt(1, contadorid.get());
 		statement.setString(2, articulo.getCodigo());
 		statement.setString(3, articulo.getNombre());
 		statement.setString(4, articulo.getDescripcion());
@@ -60,42 +54,42 @@ public class ArticuloDAO {
 		statement.setDouble(6, articulo.getPrecio());
 		statement.setString(7, activoS);
 		
-		// Para obtener e insertar el usuario se sesión
-		String usuarioCreacion = request.getParameter("nombre");
-		statement.setString(8,  usuarioCreacion);
-		
+		//Para obtener e insertar el usuario de sesión
+	    String usuarioCreacion = request.getParameter("nombre");
+	    statement.setString(8, usuarioCreacion);
+
 		statement.setTimestamp(9, timestamp);
 		
-		// Para obtenera e insertar el usuario de sesión
-		String usuarioModificacion = request.getParameter("nombre");
-		statement.setString(10, usuarioModificacion );
+		//Para obtener e insertar el usuario de sesión
+	    String usuarioModificacion = request.getParameter("nombre");
+		statement.setString(10, usuarioModificacion);
 		
 		statement.setTimestamp(11, timestamp);
 		
 		boolean rowInserted = statement.executeUpdate() > 0;
-		System.out.println("Artículo registrado");
+		System.out.println("Articulo registrado");
 		statement.close();
 		con.desconectar();
 		return rowInserted;
+        
 	}
 	
-	// Para obtener el último ID del artículo
 	public int obtenerUltimoIdArticulo() throws SQLException {
-		String sql = "SELECT MAX(idarticulo) FROM articulos";
-		try (Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(sql)){
-			if (resultSet.next()) {
-				return resultSet.getInt(1);
-			}
-		}
-		// Si no hay registros en la tabla, retorna un valor predeterminado.
-		return 0;
+	    String sql = "SELECT MAX(idarticulo) FROM articulos";
+	    try (Statement statement = connection.createStatement();
+	         ResultSet resultSet = statement.executeQuery(sql)) {
+	        if (resultSet.next()) {
+	            return resultSet.getInt(1);
+	        }
+	    }
+	    // Si no hay registros en la tabla, retorna un valor predeterminado
+	    return 0;
 	}
 
 	// listar todos los productos
 	public List<Articulo> listarArticulos() throws SQLException {
 
-		List<Articulo> listaArticulos = new ArrayList<>();
+		List<Articulo> listaArticulos = new ArrayList<Articulo>();
 		String sql = "SELECT * FROM articulos";
 		con.conectar();
 		connection = con.getJdbcConnection();
@@ -136,7 +130,7 @@ public class ArticuloDAO {
 
 		return articulo;
 	}
-
+	
 	// actualizar
 	public boolean actualizar(Articulo articulo) throws SQLException {
 		boolean rowActualizar = false;
@@ -150,22 +144,22 @@ public class ArticuloDAO {
 		statement.setDouble(4, articulo.getExistencia());
 		System.out.println(articulo.getPrecio());
 		statement.setDouble(5, articulo.getPrecio());
-		statement.setInt(6, articulo.getIdarticulo());
+		//statement.setInt(6, articulo.getIdarticulo());
 
 		rowActualizar = statement.executeUpdate() > 0;
 		statement.close();
 		con.desconectar();
 		return rowActualizar;
 	}
-
-	// eliminar
+	
+	//eliminar
 	public boolean eliminar(Articulo articulo) throws SQLException {
 		boolean rowEliminar = false;
 		String sql = "DELETE FROM articulos WHERE idarticulo=?";
 		con.conectar();
 		connection = con.getJdbcConnection();
 		PreparedStatement statement = connection.prepareStatement(sql);
-		statement.setInt(1, articulo.getIdarticulo());
+		//statement.setInt(1, articulo.getIdarticulo());
 
 		rowEliminar = statement.executeUpdate() > 0;
 		statement.close();
@@ -173,4 +167,52 @@ public class ArticuloDAO {
 
 		return rowEliminar;
 	}
+	
+	// listar los departamentos
+			public List<Departamento> listarDepartamentos() throws SQLException {
+
+				List<Departamento> listaDepartamentos = new ArrayList<Departamento>();
+				String sql = "SELECT id_departamento, nombre, observacion FROM departamento";
+				con.conectar();
+				connection = con.getJdbcConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resulSet = statement.executeQuery(sql);
+
+				while (resulSet.next()) {
+					Integer iddepartamento = resulSet.getInt("id_departamento");
+					String nombre = resulSet.getString("nombre");
+					String observacion = resulSet.getString("observacion");
+					Departamento departamento = new Departamento(iddepartamento, nombre, observacion);
+					listaDepartamentos.add(departamento);
+				}
+				con.desconectar();
+				return listaDepartamentos;
+			}
+			
+		// listar las ciudades
+			public List<Ciudad> listarCiudadesPorDepartamento(int idDepartamento) throws SQLException {
+			    List<Ciudad> listaCiudades = new ArrayList<>();
+			    String sql = "SELECT id_ciudad, id_departamento, nombre, observacion FROM ciudad WHERE id_departamento = ?";
+			    // ... Realiza la conexión a la base de datos (si aún no lo has hecho) ...
+			    con.conectar();
+				connection = con.getJdbcConnection();
+			    PreparedStatement statement = connection.prepareStatement(sql);
+			    statement.setInt(1, idDepartamento);
+			    ResultSet resultSet = statement.executeQuery();
+
+			    while (resultSet.next()) {
+			        Integer id_ciudad = resultSet.getInt("id_ciudad");
+			        Integer id_departamento = resultSet.getInt("id_departamento");
+			        String nombre = resultSet.getString("nombre");
+			        String observacion = resultSet.getString("observacion");
+			        Ciudad ciudad = new Ciudad(id_ciudad, id_departamento, nombre, observacion);
+			        listaCiudades.add(ciudad);
+			    }
+			    // ... Cierra los recursos y la conexión a la base de datos ...
+
+			    con.desconectar();
+			    return listaCiudades;
+			}
+
+			
 }
