@@ -9,11 +9,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+
+import javax.servlet.http.HttpServletRequest;
 
 import conexion.Conexion;
 import entidad.Articulo;
-import entidad.Usuario;
 
 public class ArticuloDAO {
 	private Conexion con;
@@ -41,7 +41,7 @@ public class ArticuloDAO {
 	*/
 
 	// insertar artículo
-	public boolean insertar(Articulo articulo) throws SQLException {
+	public boolean insertar(Articulo articulo, HttpServletRequest request) throws SQLException {
 		String sql = "INSERT INTO articulos (idarticulo, codigo, nombre, descripcion, existencia, precio, activo, usuario_creacion, fecha_creacion, usuario_modificacion, fecha_modificacion) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		System.out.println(articulo.getDescripcion());
 		con.conectar();
@@ -59,12 +59,21 @@ public class ArticuloDAO {
 		statement.setDouble(5, articulo.getExistencia());
 		statement.setDouble(6, articulo.getPrecio());
 		statement.setString(7, activoS);
-		statement.setString(8, null);
+		
+		// Para obtener e insertar el usuario se sesión
+		String usuarioCreacion = request.getParameter("nombre");
+		statement.setString(8,  usuarioCreacion);
+		
 		statement.setTimestamp(9, timestamp);
-		statement.setString(10, null);
+		
+		// Para obtenera e insertar el usuario de sesión
+		String usuarioModificacion = request.getParameter("nombre");
+		statement.setString(10, usuarioModificacion );
+		
 		statement.setTimestamp(11, timestamp);
 		
 		boolean rowInserted = statement.executeUpdate() > 0;
+		System.out.println("Artículo registrado");
 		statement.close();
 		con.desconectar();
 		return rowInserted;

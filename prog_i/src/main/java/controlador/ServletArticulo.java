@@ -120,7 +120,7 @@ public class ServletArticulo extends HttpServlet {
 		Articulo articulo = new Articulo(0, request.getParameter("codigo"), request.getParameter("nombre"),
 				request.getParameter("descripcion"), Double.parseDouble(request.getParameter("cantidad")),
 				Double.parseDouble(request.getParameter("precio")));
-		articuloDAO.insertar(articulo);
+		articuloDAO.insertar(articulo, request);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("principal.jsp");
 		dispatcher.forward(request, response);
