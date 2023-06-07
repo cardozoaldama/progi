@@ -1,12 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<script src="js/bootstrap.min.js"></script>
-		<title>Registrar Artículos</title>
+		<title>Registrar ArtÃ­culos</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -17,6 +17,7 @@
 		<script	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 		<!-- Latest compiled JavaScript -->
 		<script	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+		
 	</head>
 	<body>
 		<!-- Incluir cabecera header.jsp -->
@@ -26,11 +27,11 @@
 		<p></p>
 		<p></p>
 		<p></p>
-		<h1>Registrar Artículo</h1>
+		<h1>Registrar ArtÃ­culo</h1>
 		<form action="articulo?action=register" method="post">
 			<table class="table table-striped">
 			<tr>
-				<td>Código:</a></td>		
+				<td>CÃ³digo:</a></td>		
 				<td><input type="text" name="codigo"/></td>	
 			</tr>
 			<tr>
@@ -38,7 +39,7 @@
 				<td><input type="text" name="nombre"/></td>	
 			</tr>
 			<tr>
-				<td>Descripción:</a></td>		
+				<td>DescripciÃ³n:</a></td>		
 				<td><input type="text" name="descripcion"/></td>	
 			</tr>
 			<tr>
@@ -54,9 +55,18 @@
 		<br>
 		<table border="0" align="center">
 			<tr>
-			<td><input type="submit" value="Agregar" name="agregar"></td>	
+			<td><input type="submit" value="Guardar" name="agregar" onclick="LimpiarCampos()"></td>
+			<td><input type="button" value="redirigirPrincipal()" value="Cancelar" name="cancelar" onclick="LimpiarCampos()"></td>	
 			</tr>
 		
 		</form>
+		
+		<%-- Verificar si hay mensaje en la solicitud y mostrarlo --%>
+		<c:if test="$(not empty requestScope.mensaje)">
+			<div class="alert alert-success" role="alert">
+				$(requestScope.mensaje)
+			</div>
+		</c:if>
+				
 	</body>
 </html>
