@@ -68,5 +68,6 @@
 			</div>
 		</c:if>
 		<script src="../js/limpiar_campos.js"></script>
+		<script src="../js/redirigir_pagina.js"></script>
 	</body>
 </html>
