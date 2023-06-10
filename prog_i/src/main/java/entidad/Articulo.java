@@ -21,6 +21,20 @@ public class Articulo {
 		this.descripcion = descripcion;
 		this.existencia = existencia;
 		this.precio = precio;
+		
+		//this.usuarioCreacion = usuarioCreacion; 
+		//this.fechaHoraCreacion = fechaHoraCreacion; 
+		//this.usuarioModificacion = usuarioModificacion;
+		//this.fechaHoraModificacion = fechaHoraModificacion;
+		 
+	}
+	
+	public void ArticuloReg(String codigo, String nombre, String descripcion, double existencia, double precio) {
+		this.codigo = codigo;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.existencia = existencia;
+		this.precio = precio;
 		/*
 		 * this.usuarioCreacion = usuarioCreacion; this.fechaHoraCreacion =
 		 * fechaHoraCreacion; this.usuarioModificacion = usuarioModificacion;
@@ -70,29 +84,4 @@ public class Articulo {
 		this.precio = precio;
 	}
 	
-	/*
-	 * public String getActivo() { return activo; }
-	 * 
-	 * public void setActivo(String activo) { this.activo = activo; }
-	 * 
-	 * public String getUsuarioCreacion() { return usuarioCreacion; }
-	 * 
-	 * public void setUsuarioCreacion(String usuarioCreacion) { this.usuarioCreacion
-	 * = usuarioCreacion; }
-	 * 
-	 * public Timestamp getFechaHoraCreacion() { return fechaHoraCreacion; }
-	 * 
-	 * public void setFechaHoraCreacion(Timestamp fechaHoraCreacion) {
-	 * this.fechaHoraCreacion = fechaHoraCreacion; }
-	 * 
-	 * public String getUsuarioModificacion() { return usuarioModificacion; }
-	 * 
-	 * public void setUsuarioModificacion(String usuarioModificacion) {
-	 * this.usuarioModificacion = usuarioModificacion; }
-	 * 
-	 * public Timestamp getFechaHoraModificacion() { return fechaHoraModificacion; }
-	 * 
-	 * public void setFechaHoraModificacion(Timestamp fechaHoraModificacion) {
-	 * this.fechaHoraModificacion = fechaHoraModificacion; }
-	 */
 }

@@ -29,7 +29,7 @@ public class ArticuloDAO {
 	//private static final AtomicLong contadorid = new AtomicLong(104);//contador que ira incrementando el valor del ID el cual genera automaticamente
 	private AtomicInteger contadorid = new AtomicInteger(0);
 	private String activoS = "S";
-	//private String inactivoN = "N";
+	private String inactivoN = "N";
 	Long datetime = System.currentTimeMillis(); //Para obtener fecha-hora actual del sistema operativo
 	Timestamp timestamp = new Timestamp(datetime);
 	
@@ -90,7 +90,7 @@ public class ArticuloDAO {
 	public List<Articulo> listarArticulos() throws SQLException {
 
 		List<Articulo> listaArticulos = new ArrayList<Articulo>();
-		String sql = "SELECT * FROM articulos";
+		String sql = "SELECT * FROM articulos where activo = 'S'";
 		con.conectar();
 		connection = con.getJdbcConnection();
 		Statement statement = connection.createStatement();
@@ -144,7 +144,27 @@ public class ArticuloDAO {
 		statement.setDouble(4, articulo.getExistencia());
 		System.out.println(articulo.getPrecio());
 		statement.setDouble(5, articulo.getPrecio());
-		//statement.setInt(6, articulo.getIdarticulo());
+		statement.setInt(6, articulo.getIdarticulo());
+
+		rowActualizar = statement.executeUpdate() > 0;
+		statement.close();
+		con.desconectar();
+		return rowActualizar;
+	}
+	
+	public boolean actualizarArticulo(Articulo articulo) throws SQLException {
+		boolean rowActualizar = false;
+		String sql = "UPDATE articulos SET codigo=?,nombre=?,descripcion=?,existencia=?, precio=?, usuario_modificacion=?, fecha_modificacion=? WHERE idarticulo=?";
+		con.conectar();
+		connection = con.getJdbcConnection();
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, articulo.getCodigo());
+		statement.setString(2, articulo.getNombre());
+		statement.setString(3, articulo.getDescripcion());
+		statement.setDouble(4, articulo.getExistencia());
+		System.out.println(articulo.getPrecio());
+		statement.setDouble(5, articulo.getPrecio());
+		statement.setInt(6, articulo.getIdarticulo());
 
 		rowActualizar = statement.executeUpdate() > 0;
 		statement.close();
@@ -168,11 +188,30 @@ public class ArticuloDAO {
 		return rowEliminar;
 	}
 	
+	public boolean actualizarInactivar(Articulo articulo, HttpServletRequest request) throws SQLException {
+		boolean rowInactivar = false;
+		String sql = "UPDATE articulos SET activo=?, usuario_modificacion=?, fecha_modificacion=? WHERE idarticulo=?";;
+		con.conectar();
+		connection = con.getJdbcConnection();
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, inactivoN);
+		String usuarioModificacion = request.getParameter("nombre");
+		statement.setString(2, usuarioModificacion);
+		statement.setTimestamp(3, timestamp);
+		statement.setInt(4, articulo.getIdarticulo());
+
+		rowInactivar = statement.executeUpdate() > 0;
+		statement.close();
+		con.desconectar();
+
+		return rowInactivar;
+	}
+	
 	// listar los departamentos
 			public List<Departamento> listarDepartamentos() throws SQLException {
 
 				List<Departamento> listaDepartamentos = new ArrayList<Departamento>();
-				String sql = "SELECT id_departamento, nombre, observacion FROM departamento";
+				String sql = "SELECT id_departamento, nombre, observacion FROM departamento where activo='S' ";
 				con.conectar();
 				connection = con.getJdbcConnection();
 				Statement statement = connection.createStatement();
@@ -190,6 +229,28 @@ public class ArticuloDAO {
 			}
 			
 		// listar las ciudades
+			public List<Ciudad> listarCiudades() throws SQLException {
+
+				List<Ciudad> listarCiudades = new ArrayList<Ciudad>();
+				String sql = "SELECT id_ciudad, id_departamento, nombre, observacion FROM ciudad";
+				con.conectar();
+				connection = con.getJdbcConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resulSet = statement.executeQuery(sql);
+
+				while (resulSet.next()) {
+					Integer idciudad = resulSet.getInt("id_ciudad");
+					Integer iddepartamento = resulSet.getInt("id_departamento");
+					String nombre = resulSet.getString("nombre");
+					String observacion = resulSet.getString("observacion");
+					Ciudad ciudad = new Ciudad(idciudad, iddepartamento, nombre, observacion);
+					listarCiudades.add(ciudad);
+				}
+				con.desconectar();
+				return listarCiudades;
+			}
+			
+			
 			public List<Ciudad> listarCiudadesPorDepartamento(int idDepartamento) throws SQLException {
 			    List<Ciudad> listaCiudades = new ArrayList<>();
 			    String sql = "SELECT id_ciudad, id_departamento, nombre, observacion FROM ciudad WHERE id_departamento = ?";
