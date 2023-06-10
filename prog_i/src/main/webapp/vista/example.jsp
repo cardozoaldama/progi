@@ -56,7 +56,7 @@
 								<td><c:out value="${articulo.existencia}"/></td>
 								<td><c:out value="${articulo.precio}"/></td>
 								<td><a href="articulo?action=showedit&id=<c:out value="${articulo.idarticulo}" />">Editar</a></td>
-								<td><a href="articulo?action=eliminar&id=<c:out value="${articulo.idarticulo}"/>">Eliminar</a> </td>				
+								<td><a href="articulo?action=eliminar&id=<c:out value="${articulo.idarticulo}"/>">Inactivar</a> </td>				
 							</tr>
 						</c:forEach>
                     </tbody>

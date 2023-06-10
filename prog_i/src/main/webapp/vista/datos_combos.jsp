@@ -29,24 +29,23 @@
 	<input type="button" onclick="history.back()" name="volver atrás" value="Atrás">
      <p></p>
 	<h1>Datos Combos</h1>
-        <form style="margin: auto; display: table"> 
+        <form style="margin: auto; display: table" method="GET" id="form">
+        <input type="hidden" name="idDepartamento" id="idDepartamento" /> 
             <fieldset>
                 <br/>
-                <label>Seleccione el departamento</label> 
-				<select name="idDepartamento" id="departamentos">
-				<option value="" selected>Seleccionar</option>
-				  <c:forEach var="departamento" items="${listaDepartamentos}">
-				    <option value="${departamento.id_departamento}">${departamento.nombre}</option>
-				  </c:forEach>
+				<label>Seleccione el departamento</label>
+				<select name="departamentos" id="idDepartamento">
+				    <option value="" selected>Seleccionar</option>
+				    <c:forEach var="departamento" items="${listaDepartamentos}">
+				        <option value="${departamento.id_departamento}">${departamento.nombre}</option>
+				    </c:forEach>
 				</select>
-                <br/><br/>
-                <label>Seleccione la ciudad</label> 
+				
+				<label>Seleccione la ciudad</label>
 				<select name="ciudades" id="ciudades">
 				    <option value="" selected>Seleccionar</option>
 				    <c:forEach var="ciudad" items="${listaCiudades}">
-				        <c:if test="${ciudad.id_departamento == idDepartamento}">
-				            <option value="${ciudad.id_ciudad}">${ciudad.nombre}</option>
-				        </c:if>
+				        <option value="${ciudad.id_ciudad}" data-departamento="${ciudad.id_departamento}">${ciudad.nombre}</option>
 				    </c:forEach>
 				</select>
                 <br/>    
@@ -56,34 +55,40 @@
             </fieldset>
         </form>
     </body>
+
 <script>
-    $(document).ready(function() {
-        // Manejar el evento de cambio en el combo de departamentos
-        $('#departamentos').on('change', function() {
-            var idDepartamento = $(this).val();
+  document.getElementById("idDepartamento").addEventListener("change", function() {
+    var selectedDepartment = this.value;
+    document.getElementById("idDepartamento").value = selectedDepartment;
+  });
+</script>    
 
-            // Realizar una solicitud AJAX para obtener la lista de ciudades
-            $.ajax({
-                url: 'articulo',
-                method: 'POST',
-                data: { idDepartamento: idDepartamento },
-                success: function(response) {
-                    // Limpiar el combo de ciudades
-                    console.log(response); // Verificar la respuesta recibida en la consola
-                    $('#ciudades').empty();
-
-                    // Agregar las opciones de ciudades al combo
-                    $.each(response, function(index, ciudad) {
-                        $('#ciudades').append('<option value="' + ciudad.id_ciudad + '">' + ciudad.nombre + '</option>');
-                    });
-                },
-                error: function(xhr, status, error) {
-                	console.log(error); // Verificar el error en la consola
-                    // Manejar los errores de la solicitud AJAX si es necesario
-                }
-            });
-        });
-    });
+<script>
+	$(document).ready(function() {
+	    $('#idDepartamento').on('change', function() {
+	        $('#form').submit();
+	
+	        // Realizar una solicitud AJAX para obtener la lista de ciudades
+	        $.ajax({
+	            url: '/obtenerCiudades', // Ruta de tu servlet que obtiene las ciudades por departamento
+	            method: 'POST',
+	            data: { idDepartamento: this.value },
+	            success: function(response) {
+	                // Limpiar el combo de ciudades
+	                $('#ciudades').empty();
+	
+	                // Agregar las opciones de ciudades al combo
+	                $.each(response, function(index, ciudad) {
+	                    $('#ciudades').append('<option value="' + ciudad.id_ciudad + '">' + ciudad.nombre + '</option>');
+	                });
+	            },
+	            error: function(xhr, status, error) {
+	                console.log(error); // Verificar el error en la consola
+	                // Manejar los errores de la solicitud AJAX si es necesario
+	            }
+	        });
+	    });
+	});
 </script>
 
 </html>
